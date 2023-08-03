@@ -44,8 +44,11 @@ def generate_heatmap(region_selected):
     df_corr_viz = (
         region_df_corr.mask(mask).dropna(how="all").dropna(axis = "columns", how="all")
     )
-
-    return px.imshow(df_corr_viz, text_auto=True)
+    
+    fig = px.imshow (df_corr_viz, text_auto=True)
+    fig.update_layout (yaxis = dict(tickfont = dict(size=7)), 
+                       xaxis = dict(tickfont = dict(size=7)))
+    return fig
 
 
 def generate_linechart(region_selected, target_selected):
