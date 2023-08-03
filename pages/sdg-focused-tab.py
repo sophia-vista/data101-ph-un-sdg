@@ -285,7 +285,8 @@ def create_choropleth_df (indicators_selected):
         y = np.array(data_regional_2[j:])
     
         r, p = scipy.stats.pearsonr(x, y)
-        df = df.append({'Geolocation': data_regional_1[0], indicators_selected[0] + ' and ' + indicators_selected[1]: r}, ignore_index = True)
+        temp_df = pd.DataFrame ({'Geolocation': data_regional_1[0], indicators_selected[0] + ' and ' + indicators_selected[1]: r}, index = [0])
+        df = pd.concat ([df, temp_df])
 
     return df
 
