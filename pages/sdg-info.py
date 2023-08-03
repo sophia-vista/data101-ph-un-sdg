@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 
-register_page(__name__, name="SDG Info", path="/")
+register_page(__name__, name="SDG Info", path="/sgd-info")
 
 from data import *
 from constants import *
