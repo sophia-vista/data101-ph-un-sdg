@@ -94,7 +94,7 @@ def callback_func(pathname, link_elements):
 
 
 if __name__ == '__main__':
-    app.run_server (debug = True)
+    server.run(host='0.0.0.0', port='8080')
 
 
 register_page (
