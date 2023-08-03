@@ -215,6 +215,10 @@ def generate_barchart(regions_selected, indicator, selected_year, is_ascending):
     return fig
 
 
+def generate_choropleth():
+    return None
+
+
 def get_latest_year(indicator):
     temp_region = sdg_data[["Geolocation", "Year", indicator]]
     temp_region = temp_region[temp_region["Geolocation"] != "PHILIPPINES"]
@@ -416,7 +420,7 @@ linechart1_card = dbc.Card(
         dbc.CardHeader("Line Chart", id="linechart1_title", className="w-100"),
         dbc.CardBody(
             children=[
-                dcc.Graph(figure=px.line(), id="linechart1"),
+                dcc.Loading(dcc.Graph(figure=px.line(), id="linechart1")),
                 dmc.Divider(variant="dotted", className="p-2"),
                 html.H6(
                     sdg_linechart_desc_default,
@@ -435,7 +439,7 @@ linechart2_card = dbc.Card(
         dbc.CardHeader("Line Chart", id="linechart2_title", className="w-100"),
         dbc.CardBody(
             children=[
-                dcc.Graph(figure=px.line(), id="linechart2"),
+                dcc.Loading(dcc.Graph(figure=px.line(), id="linechart2")),
                 dmc.Divider(variant="dotted", className="p-2"),
                 html.H6(
                     sdg_linechart_desc_default,
@@ -455,7 +459,7 @@ barchart1_card = dbc.Card(
         dbc.CardHeader("Bar Chart", id="barchart1_title", className="w-100"),
         dbc.CardBody(
             children=[
-                dcc.Graph(figure=px.bar(), id="barchart1"),
+                dcc.Loading(dcc.Graph(figure=px.bar(), id="barchart1")),
                 dmc.Divider(variant="dotted", className="p-2"),
                 html.H6(
                     sdg_barchart_desc_default,
@@ -474,7 +478,7 @@ barchart2_card = dbc.Card(
         dbc.CardHeader("Bar Chart", id="barchart2_title", className="w-100"),
         dbc.CardBody(
             children=[
-                dcc.Graph(figure=px.bar(), id="barchart2"),
+                dcc.Loading(dcc.Graph(figure=px.bar(), id="barchart2")),
                 dmc.Divider(variant="dotted", className="p-2"),
                 html.H6(
                     sdg_barchart_desc_default,
@@ -689,15 +693,15 @@ def update_charts(
             {"display": "block"},
         )
     return (
-        px.line(),
+        blank_chart,
         "Line Chart",
-        px.bar(),
+        blank_chart,
         "Bar Chart",
         sdg_linechart_desc_default,
         sdg_barchart_desc_default,
-        px.line(),
+        blank_chart,
         "Line Chart",
-        px.bar(),
+        blank_chart,
         "Bar Chart",
         sdg_linechart_desc_default,
         sdg_barchart_desc_default,

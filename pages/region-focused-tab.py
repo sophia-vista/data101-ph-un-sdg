@@ -11,10 +11,11 @@ from constants import *
 
 register_page(__name__, name="Region-focused Tab", path="/region-focused-tab")
 
+px.set_mapbox_access_token(open(".mapbox_token").read())
+
 
 def generate_heatmap(region_selected):
     targets_df = pd.DataFrame([targets_value], columns=sdg_columns)
-    region_selected = "PHILIPPINES"
 
     region_df = sdg_data[sdg_data["Geolocation"] == region_selected]
     region_df = pd.concat([targets_df, region_df]).reset_index(drop=True)
@@ -42,14 +43,17 @@ def generate_heatmap(region_selected):
     mask = np.zeros_like(region_df_corr, dtype=bool)
     mask[np.triu_indices_from(mask)] = True
     df_corr_viz = (
-        region_df_corr.mask(mask).dropna(how="all").dropna(axis = "columns", how="all")
+        region_df_corr.mask(mask).dropna(how="all").dropna(axis="columns", how="all")
     )
 
-    return px.imshow(df_corr_viz, text_auto=True)
+    fig = px.imshow(df_corr_viz, text_auto=True)
+    fig.update_layout(
+        yaxis=dict(tickfont=dict(size=7)), xaxis=dict(tickfont=dict(size=7))
+    )
+    return fig
 
 
 def generate_linechart(region_selected, target_selected):
-    region_selected = "PHILIPPINES"
     target_selected = (
         sdg_info[sdg_info["Shortened Target"] == target_selected]
         .drop_duplicates(["Shortened Target"])["Target Number"]
@@ -69,7 +73,10 @@ def generate_linechart(region_selected, target_selected):
     region_df = region_df.drop("Target Number", axis=0)
     region_df = region_df.dropna()
 
-    fig = px.line(region_df)
+    if len(region_df) == 0:
+        return no_data_chart
+
+    fig = px.line(region_df, markers=True)
 
     fig.update_layout(
         # axis and legend font
@@ -115,6 +122,30 @@ def generate_linechart(region_selected, target_selected):
 
     fig.update_layout(
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+    )
+
+    return fig
+
+
+def generate_choropleth():
+    sdg = sdg_data["Geolocation"].unique()[1:]
+    sdg = pd.DataFrame({"Geolocation": sdg})
+    geo = pd.DataFrame(region_area["Area"])
+
+    updated_region_area = pd.concat([sdg, geo["Area"]], axis=1)
+    for i in range(len(updated_region_area)):
+        area = float(updated_region_area.loc[i, "Area"].replace(",", "").split(" ")[0])
+        updated_region_area["Area"] = updated_region_area["Area"].replace(
+            [updated_region_area.loc[i, "Area"]], area
+        )
+
+    fig = px.choropleth_mapbox(
+        updated_region_area,
+        geojson=region.geometry,
+        locations="Geolocation",
+        color="Area",
+        center={"lat": 12.099, "lon": 122.733},
+        zoom=4,
     )
 
     return fig
@@ -190,9 +221,11 @@ def retrieve_target_info(target):
         .reset_index(drop=True)
         .loc[0]
     )
-    goal_num = int (target_num.split (".")[0].split (" ")[-1])
+    goal_num = int(target_num.split(".")[0].split(" ")[-1])
     goal_name = list(
-        sdg_info[sdg_info["Target Number"] == str(target_num.split(" ")[5].split("\n")[0])][["Main SDG"]].values
+        sdg_info[
+            sdg_info["Target Number"] == str(target_num.split(" ")[5].split("\n")[0])
+        ][["Main SDG"]].values
     )[0]
 
     info = []
@@ -232,11 +265,14 @@ choropleth_card = dbc.Card(
         dbc.CardHeader("Choropleth Map of the Indicators", className="w-100"),
         dbc.CardBody(
             children=[
-                html.H6("chika hir", className="text-center"),
-                html.Img(
-                    src=dash.get_asset_url("map.png"), style={"max-width": "100%"}
+                dcc.Loading(dcc.Graph(figure=generate_choropleth(), id="choropleth")),
+                dmc.Divider(variant="dotted", className="p-2"),
+                html.H6(
+                    className="text-center",
+                    id="choropleth_desc",
                 ),
-            ]
+            ],
+            className="w-100",
         ),
     ],
     className="mt-3 flex justify-content-center align-items-center",
@@ -251,7 +287,9 @@ heatmap_card = dbc.Card(
         ),
         dbc.CardBody(
             children=[
-                dcc.Graph(figure=generate_heatmap("PHILIPPINES"), id="heatmap"),
+                dcc.Loading(
+                    dcc.Graph(figure=generate_heatmap("PHILIPPINES"), id="heatmap")
+                ),
                 dmc.Divider(variant="dotted", className="p-2"),
                 html.H6(
                     className="text-center",
@@ -274,7 +312,7 @@ def create_linechart_card(region, target, desc):
             ),
             dbc.CardBody(
                 children=[
-                    dcc.Graph(figure=generate_linechart(region, target)),
+                    dcc.Loading(dcc.Graph(figure=generate_linechart(region, target))),
                     dmc.Divider(variant="dotted", className="p-2"),
                     html.H6(
                         children=desc,
@@ -350,11 +388,12 @@ def update_accordion(targets):
     Output("heatmap_desc", "children"),
     Output("linechart_div", "children"),
     Input("target-dropdown", "value"),
+    Input("choropleth", "clickData"),
 )
-def update_charts(
-    targets,
-):
+def update_charts(targets, choropleth_click):
     region = "PHILIPPINES"
+    if choropleth_click != None:
+        region = choropleth_click["points"][0]["location"]
 
     heatmap_title = "Correlation of the Goals based on the National Data"
     if region != "PHILIPPINES":
