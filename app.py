@@ -2,17 +2,19 @@ from dash import html, dcc, Dash, Input, Output, State, callback, register_page,
 import dash
 import dash_bootstrap_components as dbc
 
+from flask import Flask
+
 EXTERNAL_BOOTSTRAP = 'https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/lumen/bootstrap.min.css'
 
+server = Flask(__name__)
 app = Dash (
-    __name__, 
+    server=server, 
     external_stylesheets = [
         EXTERNAL_BOOTSTRAP,
         'https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Source+Serif+4:wght@400;500&display=swap'
     ],
     use_pages = True
 )
-server = app.server
 
 options_in_navbar = dbc.Nav (children = [
                             dbc.NavItem (dbc.NavLink ('SDG Information', id = {'type' : 'link-navbar', 'index' : 'sdg-info'}, href = '/')),
