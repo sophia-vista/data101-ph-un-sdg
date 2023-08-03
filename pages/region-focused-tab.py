@@ -327,7 +327,7 @@ def create_linechart_card(region, target, desc):
 
 layout = dbc.Container(
     children=[
-        html.H2("Region-Focused Tab"),
+        html.H2("Region-Focused Tab", id="title"),
         control_card,
         dbc.Row(
             children=[
@@ -383,6 +383,7 @@ def update_accordion(targets):
 
 
 @callback(
+    Output("title", "children"),
     Output("heatmap", "figure"),
     Output("heatmap_title", "children"),
     Output("heatmap_desc", "children"),
@@ -391,6 +392,7 @@ def update_accordion(targets):
     Input("choropleth", "clickData"),
 )
 def update_charts(targets, choropleth_click):
+    title = "Region-Focused Tab"
     region = "PHILIPPINES"
     if choropleth_click != None:
         region = choropleth_click["points"][0]["location"]
@@ -398,6 +400,7 @@ def update_charts(targets, choropleth_click):
     heatmap_title = "Correlation of the Goals based on the National Data"
     if region != "PHILIPPINES":
         heatmap_title = "Correlation of the Goals based on " + region + " Data"
+        title = "Region-Focused Tab: " + region
 
     heatmap_info = [reg_heatmap_desc]
 
@@ -415,4 +418,4 @@ def update_charts(targets, choropleth_click):
                 create_linechart_card(region, target, linechart_info)
             )
 
-    return (generate_heatmap(region), heatmap_title, heatmap_info, linechart_cards)
+    return (title, generate_heatmap(region), heatmap_title, heatmap_info, linechart_cards)
