@@ -17,7 +17,7 @@ app = Dash (
 )
 
 options_in_navbar = dbc.Nav (children = [
-                            dbc.NavItem (dbc.NavLink ('SDG Information', id = {'type' : 'link-navbar', 'index' : 'sdg-info'}, href = '/')),
+                            dbc.NavItem (dbc.NavLink ('SDG Information', id = {'type' : 'link-navbar', 'index' : 'sdg-info'}, href = '/sgd-info')),
                             dbc.NavItem (dbc.NavLink ('SDG-Focused Tab', id = {'type' : 'link-navbar', 'index' : 'sdg-focused-tab'}, href = '/sdg-focused-tab')), 
                             dbc.NavItem (dbc.NavLink ('Region-Focused Tab', id = {'type' : 'link-navbar', 'index' : 'region-focused-tab'}, href = '/region-focused-tab')),   
                         ],
