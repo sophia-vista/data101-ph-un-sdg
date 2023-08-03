@@ -218,9 +218,9 @@ def generate_barchart(regions_selected, indicator, selected_year, is_ascending):
     return fig
 
 
-def generate_choropleth(indicators_selected):
+def generate_choropleth(indicators_selected, selected_year):
     if len (indicators_selected) == 1:
-        fig = choropleth_one_indicator (indicators_selected)
+        fig = choropleth_one_indicator (indicators_selected, selected_year)
     else:
         fig = choropleth_two_indicator (indicators_selected)
     return fig
@@ -741,7 +741,7 @@ def update_charts(
 
     if indicators != None and len(indicators) == 1:
         return (
-            generate_choropleth(indicators),
+            generate_choropleth(indicators, year),
             choropleth1_info,
             generate_linechart(regions, indicators),
             "Line Chart of the " + " ".join(indicators[0].split(" ")[1:]) + " per Year",
@@ -763,7 +763,7 @@ def update_charts(
         )
     elif indicators != None and len(indicators) == 2:
         return (
-            generate_choropleth(indicators),
+            generate_choropleth(indicators, year),
             choropleth2_info,
             generate_linechart(regions, [indicators[0]]),
             "Line Chart of the " + " ".join(indicators[0].split(" ")[1:]) + " per Year",
