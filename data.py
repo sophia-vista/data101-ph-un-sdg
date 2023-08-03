@@ -20,3 +20,10 @@ goals_name = sdg_info["Main SDG"].unique()
 
 region = gpd.read_file('./data/gadm_regions_updated.geojson').set_index('Geolocation')
 region_area = pd.read_csv('./data/region_area.csv')
+
+gdf_shp = gpd.read_file('data/geospatial_data/regional/regional_data.shp')
+regional = gpd.read_file('data/gadm_ph/gadm_regional.geojson').set_index('geolocation')
+
+for i in range(len(sdg_data.columns)):
+    name_map = {gdf_shp.columns[i] : sdg_data.columns[i]}
+    gdf_shp.rename(columns=name_map, inplace=True)

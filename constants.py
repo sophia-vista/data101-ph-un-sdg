@@ -1,8 +1,6 @@
 sdg_linechart_desc_default = "Choose an indicator to track its progress over the years."
 sdg_barchart_desc_default = "Choose an indicator to compare its progress between all regions for the latest year."
-sdg_choropleth_desc_default = "Choose a [] to []."
-
-reg_choropleth_desc_default = "Choose a target to []."
+sdg_choropleth_desc_default = "Choose an indicator to visualize its value on the Philippine map."
 
 sdg_linechart_desc = "This linechart provides a visual representation of the selected indicator's trend over the years, represented by the blue line. The red line (if available) signifies the target goal for the indicator; closer proximity between the blue and red data points indicates better progress for the specific year."
 sdg_linechart_tip = "Click on a data point to see the information for that specific year on all the graphs."
@@ -19,7 +17,7 @@ sdg_choropleth_tip2 = "Click on a region to see the information for that specifi
 reg_linechart_desc = "This line chart allows you to see the trend of all of the indicators under a specific target and determine which indicators would need to be improved. "
 reg_linechart_tip = "Click on a data point to see the information for that specific year on the choropleth map."
 reg_heatmap_desc = "This heat map illustrates how different targets of the SDG are related to each other. It indicates whether the two targets are moving in the same direction (positive value) or in opposite directions (negative value) based on the data available."
-reg_choropleth_desc = ""
+reg_choropleth_desc = "This choropleth map shows the area (in km^2) of each of the regions."
 reg_choropleth_tip = "Click on a region to see the information for that specific region on the line charts."
 
 blank_chart = {

@@ -1,9 +1,12 @@
+import numpy as np
 import pandas as pd
+import scipy
 from dash import html, dcc, Input, Output, callback, register_page, callback_context
 import dash
 import plotly.express as px
 import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
+import os
 
 from data import *
 from constants import *
@@ -215,9 +218,89 @@ def generate_barchart(regions_selected, indicator, selected_year, is_ascending):
     return fig
 
 
-def generate_choropleth():
-    return None
+def generate_choropleth(indicators_selected):
+    if len (indicators_selected) == 1:
+        fig = choropleth_one_indicator (indicators_selected)
+    else:
+        fig = choropleth_two_indicator (indicators_selected)
+    return fig
 
+def choropleth_one_indicator (indicators_selected):
+    choropleth_data = create_choropleth_data(indicators_selected [0])
+    fig = px.choropleth_mapbox(choropleth_data[0],
+                          geojson=region.geometry,
+                          locations='Geolocation',
+                          color=choropleth_data[1],
+                          center={'lat': 12.099, 'lon': 122.733}, 
+                          zoom = 4)
+    return fig
+
+def choropleth_two_indicator (indicators_selected):
+    df = create_choropleth_df (indicators_selected)
+    fig = px.choropleth_mapbox(df,
+                          geojson=region.geometry,
+                          locations='Geolocation',
+                          color=df.columns [1],
+                          center={'lat': 12.099, 'lon': 122.733}, 
+                          zoom = 4)
+    return fig
+
+def create_choropleth_data(selected_indicator):
+    # check if a csv file for this indicator already exists
+    check_file = os.path.isfile(selected_indicator+'.csv')
+    
+    # if csv file does not exist
+    if check_file == False:
+        gdf = gdf_shp[['geometry', 'Geolocation', 'Year', selected_indicator]]
+        pvt_gdf = pd.pivot_table(gdf, index='Geolocation', columns='Year', values=selected_indicator).reset_index()
+        pvt_gdf.to_csv('./data/indicator_csv/'+selected_indicator+'.csv', index = False)
+    
+    pvt_gdf = pd.read_csv('./data/indicator_csv/'+selected_indicator+'.csv')
+    
+    # Checking if there is year data based on the selected year and selected indicator 
+    try:
+        year_list = pvt_gdf.columns [1:]
+        print (year_list)
+        # year_list = list(map(float, year_list))
+        year_list = list(map(int, year_list))
+        year_list = list(map(str, year_list))
+        print('Only available year data for this indicator: ' + ', '.join(year_list))
+        selected_year = input('Input year:').strip()
+        selected_year = str (selected_year)
+        
+        # year_list = list(map(float, year_list))
+        year_list = list(map(str, year_list))
+        list(year_list).index(str(selected_year))
+        print (year_list, ' ', selected_year, type (selected_year))
+        pvt_gdf = pvt_gdf[['Geolocation',  selected_year]]
+    except:
+        print('No data for ' + selected_year)
+        selected_year = input('Input year:') # Asks for year input again if no year data
+    print('\n[SDG Indicator] ' + selected_indicator)
+    print('[Year Data] ' + selected_year)
+    return pvt_gdf, str(selected_year)
+
+def create_choropleth_df (indicators_selected):
+    ind_1 = pd.read_csv('./data/indicator_csv/'+indicators_selected[0]+'.csv')
+    ind_1_T = ind_1.T
+    ind_2 = pd.read_csv('./data/indicator_csv/'+indicators_selected[1]+'.csv')
+    ind_2_T = ind_2.T
+    df = pd.DataFrame([])
+    for i in range(17): 
+        j = 1
+        print(i)
+        data_regional_1 = ind_1_T[i]
+        data_regional_2 = ind_2_T[i]
+    
+        if i == 3:
+            j = 3
+        x = np.array(data_regional_1[j:])
+        y = np.array(data_regional_2[j:])
+    
+        r, p = scipy.stats.pearsonr(x, y)
+        df = df.append({'Geolocation': data_regional_1[0], indicators_selected[0] + ' and ' + indicators_selected[1]: r}, ignore_index = True)
+
+    return df
 
 def get_latest_year(indicator):
     temp_region = sdg_data[["Geolocation", "Year", indicator]]
@@ -405,11 +488,15 @@ choropleth_card = dbc.Card(
         dbc.CardHeader("Choropleth Map of the Indicators", className="w-100"),
         dbc.CardBody(
             children=[
-                html.H6("chika hir", className="text-center"),
-                html.Img(
-                    src=dash.get_asset_url("map.png"), style={"max-width": "100%"}
+                dcc.Loading(dcc.Graph(figure=px.choropleth(), id="choropleth")),
+                dmc.Divider(variant="dotted", className="p-2"),
+                html.H6(
+                    sdg_linechart_desc_default,
+                    className="text-center",
+                    id="choropleth_desc",
                 ),
-            ]
+            ],
+            className="w-100",
         ),
     ],
     className="mt-3 flex justify-content-center align-items-center",
@@ -591,6 +678,8 @@ def update_accordion(indicators):
 
 
 @callback(
+    Output("choropleth", "figure"),
+    Output("choropleth_desc", "children"),
     Output("linechart1", "figure"),
     Output("linechart1_title", "children"),
     Output("barchart1", "figure"),
@@ -649,8 +738,24 @@ def update_charts(
         sdg_barchart_tip,
     ]
 
+    choropleth1_info = [
+        sdg_choropleth_desc1,
+        html.Br(),
+        html.Br(),
+        sdg_choropleth_tip1,
+    ]
+
+    choropleth2_info = [
+        sdg_choropleth_desc2,
+        html.Br(),
+        html.Br(),
+        sdg_choropleth_tip2,
+    ]
+
     if indicators != None and len(indicators) == 1:
         return (
+            generate_choropleth(indicators),
+            choropleth1_info,
             generate_linechart(regions, indicators),
             "Line Chart of the " + " ".join(indicators[0].split(" ")[1:]) + " per Year",
             generate_barchart(regions, indicators, year, barchart1_is_ascending),
@@ -671,6 +776,8 @@ def update_charts(
         )
     elif indicators != None and len(indicators) == 2:
         return (
+            generate_choropleth(indicators),
+            choropleth2_info,
             generate_linechart(regions, [indicators[0]]),
             "Line Chart of the " + " ".join(indicators[0].split(" ")[1:]) + " per Year",
             generate_barchart(regions, [indicators[0]], year, barchart1_is_ascending),
@@ -693,6 +800,8 @@ def update_charts(
             {"display": "block"},
         )
     return (
+        blank_chart,
+        sdg_choropleth_desc_default,
         blank_chart,
         "Line Chart",
         blank_chart,
