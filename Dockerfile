@@ -1,13 +1,7 @@
 FROM python:3.8
 
-# Install build dependencies and curl
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
 # Working directory
-WORKDIR /app
+WORKDIR /
 
 # Copy requirements file and install dependencies
 COPY requirements.txt requirements.txt
@@ -20,4 +14,4 @@ COPY . .
 EXPOSE 8080
 
 # Calculate the number of worker processes based on the number of CPU cores
-CMD ["sh", "-c", "gunicorn -b 0.0.0.0:8080 --workers $(($(nproc --all) * 2 + 1)) app:server"]
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:server"]
