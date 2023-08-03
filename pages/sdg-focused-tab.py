@@ -225,8 +225,8 @@ def generate_choropleth(indicators_selected):
         fig = choropleth_two_indicator (indicators_selected)
     return fig
 
-def choropleth_one_indicator (indicators_selected):
-    choropleth_data = create_choropleth_data(indicators_selected [0])
+def choropleth_one_indicator (indicators_selected, selected_year):
+    choropleth_data = create_choropleth_data(indicators_selected [0], selected_year)
     fig = px.choropleth_mapbox(choropleth_data[0],
                           geojson=region.geometry,
                           locations='Geolocation',
@@ -245,7 +245,7 @@ def choropleth_two_indicator (indicators_selected):
                           zoom = 4)
     return fig
 
-def create_choropleth_data(selected_indicator):
+def create_choropleth_data(selected_indicator, selected_year):
     # check if a csv file for this indicator already exists
     check_file = os.path.isfile(selected_indicator+'.csv')
     
@@ -258,24 +258,11 @@ def create_choropleth_data(selected_indicator):
     pvt_gdf = pd.read_csv('./data/indicator_csv/'+selected_indicator+'.csv')
     
     # Checking if there is year data based on the selected year and selected indicator 
-    try:
-        year_list = pvt_gdf.columns [1:]
-        print (year_list)
-        # year_list = list(map(float, year_list))
-        year_list = list(map(int, year_list))
-        year_list = list(map(str, year_list))
-        print('Only available year data for this indicator: ' + ', '.join(year_list))
-        selected_year = input('Input year:').strip()
-        selected_year = str (selected_year)
+    year_list = pvt_gdf.columns [1:]
         
-        # year_list = list(map(float, year_list))
-        year_list = list(map(str, year_list))
-        list(year_list).index(str(selected_year))
-        print (year_list, ' ', selected_year, type (selected_year))
-        pvt_gdf = pvt_gdf[['Geolocation',  selected_year]]
-    except:
-        print('No data for ' + selected_year)
-        selected_year = input('Input year:') # Asks for year input again if no year data
+    if selected_year == None:
+        selected_year = year_list [-1]
+    pvt_gdf = pvt_gdf[['Geolocation',  selected_year]]
     print('\n[SDG Indicator] ' + selected_indicator)
     print('[Year Data] ' + selected_year)
     return pvt_gdf, str(selected_year)
