@@ -2,8 +2,6 @@ sdg_linechart_desc_default = "Choose an indicator to track its progress over the
 sdg_barchart_desc_default = "Choose an indicator to compare its progress between all regions for the latest year."
 sdg_choropleth_desc_default = "Choose a [] to []."
 
-reg_linechart_desc_default = "Choose a target to []."
-reg_heatmap_desc_default = "Choose a target to []."
 reg_choropleth_desc_default = "Choose a target to []."
 
 sdg_linechart_desc = "This linechart provides a visual representation of the selected indicator's trend over the years, represented by the blue line. The red line (if available) signifies the target goal for the indicator; closer proximity between the blue and red data points indicates better progress for the specific year."
@@ -12,6 +10,7 @@ sdg_barchart_desc = "This barchart allows you to compare the progress of the cho
 sdg_barchart_tip = (
     "Click on the bars to toggle the arrangement between ascending and descending."
 )
+
 sdg_choropleth_desc1 = "This choropleth colors the regions based on the value of the indicator chosen. With this, it would easily show which regions have lower value compared to the other regions."
 sdg_choropleth_tip1 = "Click on a region to see the information for that specific region on the lines and bar chart."
 sdg_choropleth_desc2 = "This choropleth colors the regions based on the value of the correlation of the two chosen indicators."
@@ -22,6 +21,38 @@ reg_linechart_tip = "Click on a data point to see the information for that speci
 reg_heatmap_desc = "This heat map illustrates how different targets of the SDG are related to each other. It indicates whether the two targets are moving in the same direction (positive value) or in opposite directions (negative value) based on the data available."
 reg_choropleth_desc = ""
 reg_choropleth_tip = "Click on a region to see the information for that specific region on the line charts."
+
+blank_chart = {
+    "layout": {
+        "xaxis": {"visible": False},
+        "yaxis": {"visible": False},
+        "annotations": [
+            {
+                "text": "No input yet",
+                "xref": "paper",
+                "yref": "paper",
+                "showarrow": False,
+                "font": {"size": 28},
+            }
+        ],
+    }
+}
+
+no_data_chart = {
+    "layout": {
+        "xaxis": {"visible": False},
+        "yaxis": {"visible": False},
+        "annotations": [
+            {
+                "text": "No matching data found",
+                "xref": "paper",
+                "yref": "paper",
+                "showarrow": False,
+                "font": {"size": 28},
+            }
+        ],
+    }
+}
 
 targets_value = [
     "Target Number",

@@ -18,5 +18,5 @@ sdg_indicators_available = sdg_data.columns[2:]
 
 goals_name = sdg_info["Main SDG"].unique()
 
-# gdf_shp = gpd.read_file('data/gadm_ph/regional_data.shp')
-''' region = gpd.read_file('data/gadm_ph/gadm_regional.geojson').set_index('geolocation') '''
+region = gpd.read_file('./data/gadm_regions_updated.geojson').set_index('Geolocation')
+region_area = pd.read_csv('./data/region_area.csv')
