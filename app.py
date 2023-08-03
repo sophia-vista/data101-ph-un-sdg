@@ -1,11 +1,6 @@
-import pandas as pd
 from dash import html, dcc, Dash, Input, Output, State, callback, register_page, ALL
 import dash
-import plotly.express as px
-import plotly.graph_objects as go
 import dash_bootstrap_components as dbc
-import dash_mantine_components as dmc
-from dash_iconify import DashIconify
 
 EXTERNAL_BOOTSTRAP = 'https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/lumen/bootstrap.min.css'
 
@@ -17,6 +12,7 @@ app = Dash (
     ],
     use_pages = True
 )
+server = app.server
 
 options_in_navbar = dbc.Nav (children = [
                             dbc.NavItem (dbc.NavLink ('SDG Information', id = {'type' : 'link-navbar', 'index' : 'sdg-info'}, href = '/')),

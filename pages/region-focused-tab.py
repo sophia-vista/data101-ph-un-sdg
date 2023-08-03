@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-import seaborn as sns
 from dash import html, dcc, Input, Output, callback, register_page
 import dash
 import plotly.express as px
