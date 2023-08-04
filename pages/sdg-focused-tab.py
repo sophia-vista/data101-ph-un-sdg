@@ -727,10 +727,7 @@ def update_charts(
     ]
 
     choropleth1_info = [
-        sdg_choropleth_desc1,
-        html.Br(),
-        html.Br(),
-        sdg_choropleth_tip1,
+        sdg_choropleth_desc1
     ]
 
     choropleth2_info = [

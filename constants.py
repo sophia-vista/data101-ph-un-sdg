@@ -10,7 +10,6 @@ sdg_barchart_tip = (
 )
 
 sdg_choropleth_desc1 = "This choropleth colors the regions based on the value of the indicator chosen. With this, it would easily show which regions have lower value compared to the other regions."
-sdg_choropleth_tip1 = "Click on a region to see the information for that specific region on the lines and bar chart."
 sdg_choropleth_desc2 = "This choropleth colors the regions based on the value of the correlation of the two chosen indicators."
 sdg_choropleth_tip2 = "Click on a region to see the information for that specific region on the lines and bar chart."
 
