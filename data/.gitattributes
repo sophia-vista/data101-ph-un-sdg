@@ -1,2 +1,1 @@
-geospatial_data/national/* filter=lfs diff=lfs merge=lfs -text
 geospatial_data/regional/* filter=lfs diff=lfs merge=lfs -text
