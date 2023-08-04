@@ -1,6 +1,5 @@
 import pandas as pd
 import geopandas as gpd
-import fiona
 
 sdg_data = pd.read_csv(
     "https://raw.githubusercontent.com/francheska-vicente/datapre-project/main_v2/data_output/combined_data.csv"
@@ -21,10 +20,7 @@ goals_name = sdg_info["Main SDG"].unique()
 region = gpd.read_file('./data/gadm_regions_updated.geojson').set_index('Geolocation')
 region_area = pd.read_csv('./data/region_area.csv')
 
-gdf_shp = None
-with fiona.open('data/geospatial_data/regional/regional_data.shp') as shp:
-    gdf_shp = shp
-    
+gdf_shp = gpd.read_file('data/geospatial_data/regional/regional_data.shp')
 regional = gpd.read_file('data/geospatial_data/regional/regional_data.geojson').set_index('Geolocation')
 
 for i in range(len(sdg_data.columns)):
